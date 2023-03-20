@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  games_enrollment: one
+  round: one
+  team: one
+
+two:
+  games_enrollment: two
+  round: two
+  team: two
