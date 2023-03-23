@@ -9,9 +9,11 @@ class TeamSelectionsController < ApplicationController
   end
 
   def new
-    api_service = FixturesApiService.new
-    @fixtures = api_service.fetch_fixtures
     @team_selections = Array.new(current_user.number_of_entries) { @game.team_selections.new }
+    # Replace `competition_id` with the actual competition ID
+    competition_id = 2021 # Example: English Premier League
+    football_data_service = FootballDataService.new
+    @matches = football_data_service.get_matches(competition_id)
   end
 
 
@@ -24,7 +26,13 @@ class TeamSelectionsController < ApplicationController
     end
 
     if @team_selections.all?(&:save)
-      redirect_to game_team_selections_path(@game), notice: 'Team selections successfully created!'
+      # Create new games_enrollment record
+      games_enrollment = GamesEnrollment.create(user: current_user, game: @game)
+      if games_enrollment.persisted?
+        redirect_to game_team_selections_path(@game), notice: 'Team selections successfully created!'
+      else
+        render :new, status: :unprocessable_entity
+      end
     else
       render :new, status: :unprocessable_entity
     end
