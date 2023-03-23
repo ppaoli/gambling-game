@@ -5,7 +5,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
   validates :first_name, presence: true
   validates :last_name, presence: true
-  validates :username, presence: true
-  has_many :games_enrollment
+  #validates :username, presence: true
+  has_many :games_enrollments
   has_many :games, through: :games_enrollment
 end
