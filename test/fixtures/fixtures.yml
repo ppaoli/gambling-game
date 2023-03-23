@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  date: 2023-03-22
+  competition: one
+  home_team_id: 1
+  away_team_id: 1
+
+two:
+  date: 2023-03-22
+  competition: two
+  home_team_id: 1
+  away_team_id: 1

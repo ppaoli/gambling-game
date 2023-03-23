@@ -1,9 +1,16 @@
 Rails.application.routes.draw do
-  get 'homepage/index'
   devise_for :users
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  # Defines the root path route ("/")
-  # root "articles#index"
-  root to: "homepage#index"
+  # Public games routes
+  resources :games, only: [:index, :show] do
+    resources :team_selections, only: [:index, :new, :create, :update, :destroy]
+  end
+
+  # Private games routes
+  resources :private_games, only: [:new, :create, :show, :edit, :update, :destroy]
+
+  # Root route
+  root to: 'homepage#index'
 end

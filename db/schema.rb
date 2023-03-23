@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_20_204055) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_23_090248) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -20,6 +20,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_20_204055) do
     t.bigint "country_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "current_match_day"
     t.index ["country_id"], name: "index_competitions_on_country_id"
     t.index ["sport_id"], name: "index_competitions_on_sport_id"
   end
@@ -38,10 +39,26 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_20_204055) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "fixtures", force: :cascade do |t|
+    t.date "date"
+    t.bigint "competition_id", null: false
+    t.integer "home_team_id"
+    t.integer "away_team_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["competition_id"], name: "index_fixtures_on_competition_id"
+  end
+
   create_table "games", force: :cascade do |t|
     t.bigint "competition_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "stake"
+    t.date "start_date"
+    t.datetime "deadline", precision: nil
+    t.integer "num_players"
+    t.string "title"
+    t.boolean "is_public", default: true
     t.index ["competition_id"], name: "index_games_on_competition_id"
   end
 
@@ -91,6 +108,17 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_20_204055) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "first_name"
+    t.string "last_name"
+    t.string "mobile_number"
+    t.string "gender"
+    t.string "address"
+    t.string "country"
+    t.string "city"
+    t.string "postal_code"
+    t.string "username"
+    t.date "date_of_birth"
+    t.string "street"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -99,6 +127,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_20_204055) do
   add_foreign_key "competitions", "sports"
   add_foreign_key "competitions_enrollments", "competitions"
   add_foreign_key "competitions_enrollments", "teams"
+  add_foreign_key "fixtures", "competitions"
   add_foreign_key "games", "competitions"
   add_foreign_key "games_enrollments", "games"
   add_foreign_key "games_enrollments", "users"
