@@ -11,6 +11,10 @@ Rails.application.routes.draw do
   # Private games routes
   resources :private_games, only: [:new, :create, :show, :edit, :update, :destroy]
 
+  # Insights routes
+  resources :insights, only: [:index, :show]
+
   # Root route
   root to: 'homepage#index'
 end
+
