@@ -10,11 +10,13 @@ class TeamSelectionsController < ApplicationController
 
   def new
     @team_selections = Array.new(current_user.number_of_entries) { @game.team_selections.new }
-    # Replace `competition_id` with the actual competition ID
-    competition_id = 2021 # Example: English Premier League
+    competition_id = 8 # Example: English Premier League
+    matchday = 29 # Example: Matchday 29
     football_data_service = FootballDataService.new
-    @matches = football_data_service.get_matches(competition_id)
+    response = football_data_service.get_matches(competition_id, matchday)
+    @matches = response['data']
   end
+
 
 
   def create

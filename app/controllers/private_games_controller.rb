@@ -9,18 +9,51 @@ class PrivateGamesController < ApplicationController
   def create
     @game = Game.new(game_params)
     @game.is_public = false
-    if @game.save
-      redirect_to private_game_path(@game), notice: 'Private game successfully created!'
+    @game.user = current_user
+
+    # Fetch fixtures for the selected competition, season, and round
+    competition_id = 8 # Example: Premier League
+    season_id = 19734 # Example: 2022/2023 season
+    round_id = 29 # Example: Matchday 29
+    football_data_service = FootballDataService.new
+    response = football_data_service.get_fixtures(competition_id, season_id, round_id)
+
+    if response['data'].any?
+      if @game.save
+        redirect_to private_game_path(@game), notice: 'Private game successfully created!'
+      else
+        render :new, status: :unprocessable_entity
+      end
     else
-      render :new, status: :unprocessable_entity
+      redirect_to new_private_game_path, alert: 'There are no upcoming matches for the selected competition and matchday.'
     end
   end
+
+
 
   def show
   end
 
   def edit
   end
+
+  def fetch_and_create_competition(competition_id)
+    competition = Competition.find_by(id: competition_id)
+
+    unless competition
+      football_data_service = FootballDataService.new
+      competition_data = football_data_service.get_competition(competition_id)
+
+      competition = Competition.create!(
+        id: competition_data['id'],
+        name: competition_data['name'],
+        # Add any other fields you need for your Competition model
+      )
+    end
+
+    competition
+  end
+
 
   def update
     if @game.update(game_params)
@@ -41,7 +74,8 @@ class PrivateGamesController < ApplicationController
     @game = Game.find(params[:id])
   end
 
+
   def game_params
-    params.require(:game).permit(:competition_id, :title, :stake, :start_date, :deadline, :num_players)
+    params.require(:game).permit(:competition_id, :stake, :start_date, :deadline, :num_players, :title, :user_id)
   end
 end
