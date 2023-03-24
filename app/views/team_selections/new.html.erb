@@ -1,5 +1,11 @@
-<% @matches['matches'].each do |match| %>
-  <div>
-    <%= match['homeTeam']['name'] %> vs <%= match['awayTeam']['name'] %>
+<h1>Select Your Team</h1>
+
+<%= form_for [@game, @team_selection] do |f| %>
+  <div class="form-group">
+    <%= f.label :team_id, 'Select a team' %>
+    <%= f.collection_select(:team_id, @teams, :id, :name, prompt: true) %>
   </div>
+
+  <%= f.submit 'Save', class: 'btn btn-primary' %>
 <% end %>
+

@@ -4,7 +4,7 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Public games routes
-  resources :games, only: [:index, :show] do
+  resources :games, only: [ :index, :show] do
     resources :team_selections, only: [:index, :new, :create, :update, :destroy]
   end
 
@@ -17,4 +17,3 @@ Rails.application.routes.draw do
   # Root route
   root to: 'homepage#index'
 end
-

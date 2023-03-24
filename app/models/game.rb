@@ -1,5 +1,6 @@
 class Game < ApplicationRecord
   belongs_to :competition
+  belongs_to :user
   has_many :rounds
   validates :stake, presence: true, numericality: { greater_than_or_equal_to: 10 }
   has_many :games_enrollments

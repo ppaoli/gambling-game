@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_23_090248) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_24_111908) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -59,7 +59,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_23_090248) do
     t.integer "num_players"
     t.string "title"
     t.boolean "is_public", default: true
+    t.bigint "user_id", null: false
     t.index ["competition_id"], name: "index_games_on_competition_id"
+    t.index ["user_id"], name: "index_games_on_user_id"
   end
 
   create_table "games_enrollments", force: :cascade do |t|
@@ -129,6 +131,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_23_090248) do
   add_foreign_key "competitions_enrollments", "teams"
   add_foreign_key "fixtures", "competitions"
   add_foreign_key "games", "competitions"
+  add_foreign_key "games", "users"
   add_foreign_key "games_enrollments", "games"
   add_foreign_key "games_enrollments", "users"
   add_foreign_key "rounds", "games"

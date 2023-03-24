@@ -1,7 +1,7 @@
 <%# <div class="container bg-white justify-content-center pt-3 pb-3">
   <div class="row"> %>
     <%# <div class="col"> %>
-      <%# <% if user_signed_in? %> 
+      <%# <% if user_signed_in? %>
       <%= render 'shared/errors', resource: @game %>
         <%= simple_form_for @game, url: private_games_path do |f| %>
           <%= f.input :title, label: 'title', placeholder: "Name of your game"%>
@@ -10,8 +10,8 @@
             <%= f.label :deadline, 'Deadline' %>
             <%= f.datetime_local_field :deadline %>
           <%= f.input :num_players, label: 'Number of participants', placeholder: "15 is the minimum number of players required" %>
-          <%#= f.association :guests, collection: User.all, input_html: { multiple: true }, label_method: lambda { |user| "#{user.first_name} #{user.last_name}" }, label_value: :id %>
-          <%# <div class="home-CTA-buttons d-grid gap-2"> %>
+           <%= f.hidden_field :competition_id, value: 2021 %>
+          <%= f.hidden_field :user_id, value: current_user.id %>
             <%= f.submit class:"btn btn-secondary" %>
           </div>
         <% end %>
