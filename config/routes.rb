@@ -4,8 +4,14 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Public games routes
-  resources :games, only: [ :index, :show] do
-    resources :team_selections, only: [:index, :new, :create, :update, :destroy]
+  resources :games, only: [ :index, :show, :new, :create] do
+    get 'new_public_game', on: :collection
+    post 'create_public_game', on: :collection
+    resources :team_selections, only: [:index, :new, :create, :update, :destroy] do
+      collection do
+        get 'fetch_fixtures'
+      end
+    end
   end
 
   # Private games routes

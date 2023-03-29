@@ -1,0 +1,11 @@
+<%= render 'shared/errors', resource: @game %>
+<%= simple_form_for @game, url: create_public_game_games_path do |f| %>
+  <%= f.input :title, label: 'title', placeholder: "Name of your game"%>
+  <%= f.input :stake, label: 'Stake(£)' %>
+  <%= f.input :start_date, label: 'Start Date'%>
+  <%= f.label :deadline, 'Deadline' %>
+  <%= f.datetime_local_field :deadline %>
+  <%= f.input :competition_id, collection: @competitions.map { |c| [c[:name], c[:id]] }, label: 'Competition' %>
+  <%= f.submit 'Create public game!' %>
+  </div>
+<% end %>

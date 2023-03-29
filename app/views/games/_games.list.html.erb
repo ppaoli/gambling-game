@@ -1,0 +1,17 @@
+<% games.each do |game| %>
+  <div class="game">
+    <div class="game-info">
+      <h3><%= game.name %></h3>
+      <p>Stake: £<%= game.stake %></p>
+      <p>Deadline: <%= game.deadline %></p>
+    </div>
+    <%= form_with url: game_team_selections_path(game), method: :post, id: "join_game_form_#{game.id}", data: { game_id: game.id, action: "submit->filter#submitJoinGame" } do |f| %>
+      <%= f.label :number_of_entries, 'Number of entries:' %>
+      <%= f.select :number_of_entries, options_for_select([1, 2]), {}, data: { action: "change->filter#fetchFixtures" } %>
+      <div id="fixtures-container-<%= game.id %>">
+        <!-- Fixtures will be loaded here -->
+      </div>
+      <%= f.submit 'Join' %>
+    <% end %>
+  </div>
+<% end %>
