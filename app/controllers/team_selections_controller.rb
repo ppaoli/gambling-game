@@ -8,18 +8,30 @@ class TeamSelectionsController < ApplicationController
     @team_selections = @game.team_selections.where(user: current_user)
   end
 
-  def new
-    @team_selections = Array.new(current_user.number_of_entries) { @game.team_selections.new }
-    competition_id = 8 # Example: English Premier League
-    matchday = 29 # Example: Matchday 29
-    football_data_service = FootballDataService.new
-    response = football_data_service.get_matches(competition_id, matchday)
-    @matches = response['data']
-  end
+# app/controllers/team_selections_controller.rb
+
+def new
+  @team_selections = Array.new(current_user.number_of_entries) { @game.team_selections.new }
+  sports_monk_service = SportsMonkService.new
+  @competitions = sports_monk_service.get_competitions
+end
+
+
+
+def fetch_fixtures
+  competition_id = params[:competition_id]
+  sports_monk_service = SportsMonkService.new
+  response = sports_monk_service.get_next_fixtures(competition_id)
+  @fixtures = response['data']
+  @matches = response['data']
+  render :new
+end
+
 
 
 
   def create
+    authorize @game, :join?
     @team_selections = params[:team_selections].map do |team_selection|
       ts = TeamSelection.new(team_selection.permit(:team_id, :round_id, :entry_identifier))
       ts.user = current_user

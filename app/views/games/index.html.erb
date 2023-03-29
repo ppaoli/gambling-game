@@ -1,0 +1,8 @@
+<%= form_tag games_path, method: :get, remote: true, id: 'competition_filter_form' do %>
+  <%= label_tag :competition, 'Competition:' %>
+  <%= select_tag :competition, options_for_select(@competitions.map { |c| [c[:name], c[:id]] }), prompt: 'Select a competition', data: { action: "change->filter#filterCompetitions" } %>
+<% end %>
+
+<div id="games-container">
+  <%= render partial: 'games_list', locals: { games: @games } %>
+</div>

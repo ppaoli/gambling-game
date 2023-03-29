@@ -15,6 +15,16 @@
     /> %>
   </div>
 
+<% if user_signed_in? %>
+  <%= link_to "Join a Public Game", games_path, class: "btn btn-primary" %>
+  <%= link_to "Create Your Private Game", new_private_game_path, class: "btn btn-secondary" %>
+  <% if current_user.admin? %>
+    <%= link_to "Create Public Game", new_public_game_games_path, class: "btn btn-danger" %>
+  <% end %>
+<% end %>
+
+
+
 <h1>Champion's Choice </h1>
 
 <h4>Rules of the game</h4>

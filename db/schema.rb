@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_24_111908) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_27_170832) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -47,6 +47,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_24_111908) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["competition_id"], name: "index_fixtures_on_competition_id"
+  end
+
+  create_table "game_invitations", force: :cascade do |t|
+    t.bigint "game_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["game_id"], name: "index_game_invitations_on_game_id"
+    t.index ["user_id"], name: "index_game_invitations_on_user_id"
   end
 
   create_table "games", force: :cascade do |t|
@@ -121,6 +130,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_24_111908) do
     t.string "username"
     t.date "date_of_birth"
     t.string "street"
+    t.boolean "admin", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -130,6 +140,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_24_111908) do
   add_foreign_key "competitions_enrollments", "competitions"
   add_foreign_key "competitions_enrollments", "teams"
   add_foreign_key "fixtures", "competitions"
+  add_foreign_key "game_invitations", "games"
+  add_foreign_key "game_invitations", "users"
   add_foreign_key "games", "competitions"
   add_foreign_key "games", "users"
   add_foreign_key "games_enrollments", "games"

@@ -2,45 +2,18 @@
 <p><%= @game.stake %> stake</p>
 <p><%= @game.start_date.strftime('%B %d, %Y') %></p>
 <p><%= @game.num_players %> players</p>
-<p><%= @game.is_public ? "Public" : "Private" %> game</p>
 <p>Deadline: <%= @game.deadline.strftime('%B %d, %Y %H:%M:%S %Z') %></p>
 
 <% if @game.games_enrollments.exists?(user_id: current_user.id) %>
   <% @team_selections = @game.team_selections.where(user: current_user) %>
   <%= render partial: 'team_selections/team_selections_table', locals: { team_selections: @team_selections } %>
 <% else %>
-  <%= simple_form_for @team_selections, url: game_team_selections_path(@game) do |f| %>
-    <% @game.number_of_entries.times do %>
-      <div class="form-group">
-        <%= f.fields_for :team_selections, TeamSelection.new do |ts| %>
-          <%= ts.input :team_id, label: "Select a team", collection: @teams, prompt: "Select a team" %>
-          <%= ts.hidden_field :entry_identifier, value: loop.index %>
-          <%= ts.hidden_field :round_id %>
-        <% end %>
-      </div>
-    <% end %>
-    <%= f.submit "Save selections", class: "btn btn-primary" %>
-  <% end %>
-
-  <% if @matches.present? %>
-    <h2>Upcoming Matches</h2>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Home Team</th>
-          <th>Away Team</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @matches.each do |match| %>
-          <tr>
-            <td><%= match.dig('localTeam', 'data', 'name') %></td>
-            <td><%= match.dig('visitorTeam', 'data', 'name') %></td>
-            <td><%= match['starting_at'].to_datetime.strftime('%B %d, %Y %H:%M:%S %Z') %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+  <%= form_with url: game_team_selections_path(@game), method: :post, id: "join_game_form_#{game.id}", data: { game_id: game.id, action: "submit->filter#submitJoinGame" } do |f| %>
+    <%= f.label :number_of_entries, 'Number of entries:' %>
+    <%= f.select :number_of_entries, options_for_select([1, 2]), {}, data: { action: "change->filter#fetchFixtures" } %>
+    <div id="fixtures-container-<%= game.id %>">
+      <!-- Fixtures will be loaded here -->
+    </div>
+    <%= f.submit 'Join' %>
   <% end %>
 <% end %>

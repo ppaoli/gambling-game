@@ -63,6 +63,10 @@ group :development do
   # gem "spring"
 end
 
+group :development, :test do
+  gem 'dotenv-rails'
+end
+
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
@@ -75,3 +79,4 @@ gem 'bootstrap-sass'
 gem "bootstrap"
 gem "simple_form"
 gem "httparty"
+gem "pundit"

@@ -10,6 +10,9 @@ module GamblingGame
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
+    config.autoload_paths += %W(#{config.root}/app/services)
+    config.x.sports_monk_api_token = ENV['SPORTS_MONK_API_TOKEN']
+
 
     # Configuration for the application, engines, and railties goes here.
     #
