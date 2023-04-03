@@ -20,6 +20,10 @@ Rails.application.routes.draw do
   # Insights routes
   resources :insights, only: [:index, :show]
 
+  # Rules routes
+
+  resources :rules, only: [:index]
+
   # Root route
   root to: 'homepage#index'
 end

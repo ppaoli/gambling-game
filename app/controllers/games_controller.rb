@@ -1,37 +1,28 @@
 class GamesController < ApplicationController
   before_action :set_game, only: [:show]
-  before_action :authenticate_admin!, only: [:new_public_game, :create_public_game]
+  before_action :competitions_all, only: [:index, :new_public_game, :create_public_game]
+
 
   def index
-    @competitions = Competition.all
-    @games = Game.where(is_public: true)
-
-    if params[:competition_id].present?
-      @games = @games.where(competition_id: params[:competition_id])
-    end
-
-    respond_to do |format|
-      format.html
-      format.js { render partial: 'games_list', locals: { games: @games } }
-    end
+    @competitions = Competition.all.order(:name)
+    @games = Game.includes(:competition).where(is_public: true)
+    @games = @games.where(competition_id: params[:competition_id]) if params[:competition_id].present?
+    @games = @games.where(stake: params[:stake]) if params[:stake].present?
+    @games = @games.order(deadline: :asc)
   end
 
+
+
   def show
+    @game = Game.find(params[:id])
+    @fixtures = @game.competition.fixtures.order(start_time: :asc)
   end
 
   def new_public_game
     @game = Game.new
-    sports_monk_service = SportsMonkService.new
-    @competitions = sports_monk_service.get_competitions
+    @competitions = SportsMonkService.new.sportmonk_competitions_ids.map { |comp| [comp[:name], comp[:sport_monk_competition_id]] }
   end
 
- 
-
-def fetch_fixtures
-  @game = Game.find(params[:game_id])
-  sports_monk_service = SportsMonkService.new
-  season_id = sports_monk_service.get_current_season_id(@game.competition_id)
-  @fixtures = sports_monk_service.get_fixtures_by_season_id(season_id)
 
 
 
@@ -39,25 +30,50 @@ def fetch_fixtures
     @game = Game.new(game_params)
     @game.is_public = true
     @game.num_players = nil
-    @game.user = current_user
+    @game.user_id = current_user.id
+    sports_monk_service = SportsMonkService.new
+    competition_details = sports_monk_service.get_sportmonk_competition_details(params[:game][:competition_id])
 
-    if @game.save
-      sports_monk_service = SportsMonkService.new
-      season_id = sports_monk_service.get_current_season_id(@game.competition_id)
-      fixtures = sports_monk_service.get_fixtures(season_id)
-      # Process the fixtures as needed for your application
-      fixtures.each do |fixture|
-        Fixture.create(
-          competition_id: @game.competition_id,
-          home_team_id: fixture['localteam_id'],
-          away_team_id: fixture['visitorteam_id'],
-          start_time: fixture['time']['starting_at']['date_time']
-        )
-      end
+    sport_monk_sport_id = competition_details[:sport_monk_sport_id]
+    sport_monk_country_id = competition_details[:sport_monk_country_id]
 
-      redirect_to games_path, notice: 'Public game was successfully created.'
-    else
+    # Create the Sport and Country Models
+    # You can use the retrieved Sport and Country IDs to find or create the corresponding Sport and Country models in your application:
+    country = Country.find_or_create_by(sport_monk_country_id: sport_monk_country_id)
+    sport = Sport.find_or_create_by(sport_monk_sport_id: sport_monk_sport_id)
+
+    competition = Competition.find_or_create_by(sport_monk_competition_id: params[:game][:competition_id])
+    competition.update(name: competition_details[:name])
+
+
+    competition.sport = sport
+    competition.country = country
+
+    # Save the competition
+    unless competition.save
       render :new_public_game
+      return
+    end
+
+    # Associate the new competition with the game
+    @game.competition = competition
+
+
+    fixtures = sports_monk_service.get_closest_upcoming_round_fixtures(params[:game][:competition_id])
+
+
+    # Calculate the deadline as 2 hours before the first fixture in the upcoming round
+    first_fixture_start_time = DateTime.parse(fixtures.first['starting_at']) - 2.hours
+    @game.deadline = first_fixture_start_time
+
+    respond_to do |format|
+      if @game.save
+        format.html { redirect_to games_path, notice: 'Game was successfully created.' }
+        format.json { render :show, status: :created, location: games_path }
+      else
+        format.html { render :new_public_game }
+        format.json { render json: @game.errors, status: :unprocessable_entity }
+      end
     end
   end
 
@@ -67,13 +83,15 @@ def fetch_fixtures
     @game = Game.find(params[:id])
   end
 
-  def authenticate_admin!
-    unless current_user && current_user.admin?
-      redirect_to root_path, alert: "You don't have permission to perform this action."
-    end
+  def game_params
+    params.require(:game).permit(:competition_id, :stake, :deadline, :title)
   end
 
-  def game_params
-    params.require(:game).permit(:competition_id, :stake, :start_date, :deadline, :num_players, :title)
+
+  def competitions_all
+    sports_monk_service = SportsMonkService.new
+    @competitions = sports_monk_service.sportmonk_competitions_ids.map do |competition|
+      [competition[:name], competition[:id]]
+    end
   end
 end

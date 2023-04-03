@@ -1,0 +1,27 @@
+<h2><%= @game.competition.name %></h2>
+<p>Total Pot: <%= @game.total_pot %></p>
+
+<%= form_tag game_fixtures_path(@game), method: :post do %>
+  <label for="entries">Select the number of entries you would like:</label>
+  <%= select_tag "entries", options_for_select([1, 2]) %>
+  <%= submit_tag "Submit" %>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Home Team</th>
+      <th>Away Team</th>
+      <th>Select</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @fixtures.each do |fixture| %>
+      <tr>
+        <td><%= fixture['home_team']['name'] %></td>
+        <td><%= fixture['away_team']['name'] %></td>
+        <td><%= button_to "Select", game_fixture_selections_path(@game, fixture['id']), method: :post %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

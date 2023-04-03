@@ -1,8 +1,35 @@
-<%= form_tag games_path, method: :get, remote: true, id: 'competition_filter_form' do %>
-  <%= label_tag :competition, 'Competition:' %>
-  <%= select_tag :competition, options_for_select(@competitions.map { |c| [c[:name], c[:id]] }), prompt: 'Select a competition', data: { action: "change->filter#filterCompetitions" } %>
+
+
+<h1>Public Games</h1>
+
+<%= form_tag(games_path, method: :get, class: 'form-inline mb-3') do %>
+  <%= select_tag(:competition_id, options_for_select(@competitions.map { |c| [c.name, c.id] }), {prompt: 'All competitions', class: 'form-select mr-3'}) %>
+  <%= select_tag(:stake, options_for_select([['All stakes', ''], ['£10', 10], ['£20', 20], ['£30', 30], ['£40', 40], ['£50', 50]]), {prompt: 'All stakes', class: 'form-select mr-3'}) %>
+  <%= submit_tag('Filter', class: 'btn btn-primary') %>
 <% end %>
 
-<div id="games-container">
-  <%= render partial: 'games_list', locals: { games: @games } %>
-</div>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Competition</th>
+      <th>Stake</th>
+      <th>Deadline for Entry</th>
+      <th>Start Date</th>
+      <th>Number of Entries</th>
+      <th>Total Pot</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @games.each do |game| %>
+      <tr>
+        <td><%= game.competition.name %></td>
+        <td><%= game.stake %></td>
+        <td><%= game.deadline&.strftime('%A %d %B %Y %H:%M') || '' %></td>
+        <%# <td><%= game.start_date.strftime('%A %d %B %Y %H:%M') %></td> 
+        <td><%= game.num_players %></td><td><%= number_to_currency((game.stake || 0) * (game.num_players || 0)) %></td>
+        <td><%= button_to 'Join game and proceed to selection', game_path(game), method: :get, class: 'btn btn-primary' %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

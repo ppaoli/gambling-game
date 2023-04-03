@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_27_170832) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_02_225859) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -21,6 +21,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_27_170832) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "current_match_day"
+    t.integer "sport_monk_competition_id"
     t.index ["country_id"], name: "index_competitions_on_country_id"
     t.index ["sport_id"], name: "index_competitions_on_sport_id"
   end
@@ -37,6 +38,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_27_170832) do
   create_table "countries", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "sport_monk_country_id"
   end
 
   create_table "fixtures", force: :cascade do |t|
@@ -92,6 +94,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_27_170832) do
   create_table "sports", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "name"
+    t.integer "sport_monk_sport_id"
   end
 
   create_table "teams", force: :cascade do |t|
