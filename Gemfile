@@ -75,7 +75,6 @@ group :test do
 end
 
 gem "devise"
-gem 'bootstrap-sass'
 gem "bootstrap"
 gem "simple_form"
 gem "httparty"

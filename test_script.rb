@@ -11,15 +11,20 @@ def test_closest_upcoming_fixtures
     puts "Fetching closest upcoming fixtures for season_id: #{season_id}"
     fixtures = sports_monk_service.get_closest_upcoming_round_fixtures(season_id)
 
-    if fixtures.empty?
+    if fixtures.nil? || fixtures.empty?
       puts "No upcoming fixtures found for season_id: #{season_id}"
     else
-       # Sort the fixtures by start date
-       fixtures.sort_by! { |fixture| fixture['starting_at'] }
-
-       fixtures.each do |fixture|
-        puts "Fixture ID: #{fixture['id']}, Teams: #{fixture['name']}, Starting At: #{fixture['starting_at']}"
+      # Sort the fixtures by start date
+      fixtures.sort_by! { |fixture| fixture['starting_at'] }
+      fixtures.each do |fixture|
+        puts "Fixture: #{fixture['name']} (#{fixture['starting_at']})"
       end
+      # Calculate deadline of round
+      deadline = DateTime.parse(fixtures.first['starting_at']) - Rational(2, 24)
+      deadline = deadline.strftime('%Y-%m-%d %H:%M:%S')
+      puts "deadline: #{deadline}"
+
+      puts "\n"
     end
 
     puts "\n"
