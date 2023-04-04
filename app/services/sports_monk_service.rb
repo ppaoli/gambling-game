@@ -9,7 +9,7 @@ class SportsMonkService
 
 
   def sportmonk_competitions_ids
-    [
+   [
       { name: 'Premier League', sport_monk_competition_id: 19734 },
       { name: 'Bundesliga', sport_monk_competition_id: 19744 },
       { name: 'Ligue 1', sport_monk_competition_id: 19745 },
@@ -17,6 +17,10 @@ class SportsMonkService
       { name: 'La Liga', sport_monk_competition_id: 19799 }
     ]
   end
+
+  # sportmonk_competitions_ids.each do |comp|
+  #   Competition.find_or_create_by(name: comp[:name], sport_monk_competition_id: comp[:sport_monk_competition_id])
+  # end
 
 
 
@@ -33,11 +37,10 @@ class SportsMonkService
     puts "Country ID is #{sport_monk_country_id}"
     sport_monk_sport_id = first_fixture["participants"][0]["sport_id"]
     puts "Sport ID is #{sport_monk_sport_id}"
-    competition_name = sportmonk_competitions_ids.find { |comp| comp[:sport_monk_competition_id] == competition_id }[:name]
+
     {
       sport_monk_country_id: sport_monk_country_id,
       sport_monk_sport_id: sport_monk_sport_id,
-      name: competition_name
     }
   end
 
@@ -73,14 +76,14 @@ class SportsMonkService
         end
       end
     end
-    puts "Closest upcoming round: #{closest_upcoming_round}"
+    # puts "Closest upcoming round: #{closest_upcoming_round}"
     closest_upcoming_fixtures = closest_upcoming_round['fixtures']
 
     # Sort fixtures by starting time
     closest_upcoming_fixtures.sort_by! { |fixture| fixture['starting_at'] }
 
     # Display fixtures in chronological order
-    closest_upcoming_fixtures.each do |fixture|
+    round_fixtures = closest_upcoming_fixtures.each do |fixture|
       puts "Fixture: #{fixture['name']} (#{fixture['starting_at']})"
     end
 
@@ -89,7 +92,7 @@ class SportsMonkService
     deadline = deadline.strftime('%Y-%m-%d %H:%M:%S')
     puts "Deadline: #{deadline}"
 
-    closest_upcoming_fixtures
+    return round_fixtures
   end
 
   # # Map competition to sport and country
