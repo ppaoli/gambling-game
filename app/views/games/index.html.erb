@@ -11,24 +11,29 @@
 <table class="table">
   <thead>
     <tr>
-      <th>Competition</th>
+      <th>Game Title</th>
       <th>Stake</th>
       <th>Deadline for Entry</th>
       <th>Start Date</th>
       <th>Number of Entries</th>
       <th>Total Pot</th>
       <th></th>
+      <th></th>
+      <th>Edit Game</th>
     </tr>
   </thead>
   <tbody>
     <% @games.each do |game| %>
       <tr>
-        <td><%= game.competition.name %></td>
+        <td><%= game.title %></td>
         <td><%= game.stake %></td>
         <td><%= game.deadline&.strftime('%A %d %B %Y %H:%M') || '' %></td>
-        <%# <td><%= game.start_date.strftime('%A %d %B %Y %H:%M') %></td> 
-        <td><%= game.num_players %></td><td><%= number_to_currency((game.stake || 0) * (game.num_players || 0)) %></td>
+        <td><%= game.start_date.strftime("%A %d %B %Y")%></td>
+        <td><%= game.num_players %></td>
+        <td><%= number_to_currency((game.stake || 0) * (game.num_players || 0)) %></td>
+         <td></td>
         <td><%= button_to 'Join game and proceed to selection', game_path(game), method: :get, class: 'btn btn-primary' %></td>
+        <td><%= link_to 'Edit', edit_game_path(game) %></td>
       </tr>
     <% end %>
   </tbody>

@@ -1,21 +1,19 @@
-<%= render 'shared/errors', resource: @game %>
-<%= form_with(model: @game, url: create_public_game_games_path, local: true) do |form| %>
+<h1>Edit Public Game</h1>
 
+<%= render 'shared/errors', resource: @game %>
+<%= form_with(model: @game, url: game_path(@game), method: :patch, local: true) do |form| %>
 
   <%= form.label :title %>
   <%= form.text_field :title %>
 
-  <%= form.label :starting_date %>
-  <%= form.date_field :start_date %>
+    <%= form.label :starting_date %>
+  <%= form.date_field :starting_date %>
 
   <%= form.label :stake %>
   <%= form.number_field :stake, min: 10 %>
 
-
   <%= form.label :competition_id %>
   <%= form.collection_select(:competition_id, @competitions, :last, :first, { prompt: 'Select competition' }, { class: 'form-select' }) %>
 
-
-
-  <%= form.submit 'Create Game' %>
+  <%= form.submit 'Update Game' %>
 <% end %>

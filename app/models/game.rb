@@ -8,6 +8,7 @@ class Game < ApplicationRecord
   validates :stake, presence: true, numericality: { greater_than_or_equal_to: 10 }
   has_many :games_enrollments
   validates :is_public, inclusion: { in: [true, false] }
+  validates :start_date, presence: true
 
   # Adding this line to validate the deadline
   validate :deadline_in_future, on: :create
