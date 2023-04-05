@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_02_225859) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_05_211749) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -71,6 +71,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_02_225859) do
     t.string "title"
     t.boolean "is_public", default: true
     t.bigint "user_id", null: false
+    t.integer "max_entries_per_user", default: 2
     t.index ["competition_id"], name: "index_games_on_competition_id"
     t.index ["user_id"], name: "index_games_on_user_id"
   end
@@ -80,6 +81,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_02_225859) do
     t.bigint "game_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "num_entries"
+    t.integer "status"
+    t.integer "entry_id"
     t.index ["game_id"], name: "index_games_enrollments_on_game_id"
     t.index ["user_id"], name: "index_games_enrollments_on_user_id"
   end
