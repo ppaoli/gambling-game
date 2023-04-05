@@ -18,6 +18,7 @@
   <%# </tbody>
 </table> %>
 <h1><%= @game.title %></h1>
+
 <%# <% @fixtures.each do |fixture| %>
   <%# <% starting_at = DateTime.parse(fixture['starting_at']) %>
   <%# <li>
@@ -37,4 +38,3 @@
     <div class="starting-at"><%= DateTime.parse(fixture['starting_at']).strftime('%A %B %e %Y %H:%M') %></div>
   </div>
 <% end %>
-

@@ -3,13 +3,25 @@ class GamesController < ApplicationController
   before_action :competitions_all, only: [:index, :new_public_game, :create_public_game]
 
 
+  # def index
+  #   competitions_all
+  #   @games = Game.includes(:competition).where(is_public: true)
+  #   @games = @games.where(competition_id: params[:competition_id]) if params[:competition_id].present?
+  #   @games = @games.where(stake: params[:stake]) if params[:stake].present?
+  #   @games = @games.order(deadline: :asc)
+  # end
+
   def index
-    @competitions = Competition.all.order(:name)
+    competitions_all
     @games = Game.includes(:competition).where(is_public: true)
-    @games = @games.where(competition_id: params[:competition_id]) if params[:competition_id].present?
+    if params[:competition_id].present?
+      @games = @games.joins(:competition).where('competitions.sport_monk_competition_id': params[:competition_id])
+    end
     @games = @games.where(stake: params[:stake]) if params[:stake].present?
     @games = @games.order(deadline: :asc)
   end
+
+
 
 
 

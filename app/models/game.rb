@@ -14,6 +14,9 @@ class Game < ApplicationRecord
   validate :deadline_in_future, on: :create
   validate :competition_id_exists, on: :create_public_game
 
+
+  MAX_ENTRIES_PER_USER = 2
+
   private
 
   # Add this method to check if the deadline is in the future

@@ -2,11 +2,19 @@
 
 <h1>Public Games</h1>
 
+
 <%= form_tag(games_path, method: :get, class: 'form-inline mb-3') do %>
-  <%= select_tag(:competition_id, options_for_select(@competitions.map { |c| [c.name, c.id] }), {prompt: 'All competitions', class: 'form-select mr-3'}) %>
-  <%= select_tag(:stake, options_for_select([['All stakes', ''], ['£10', 10], ['£20', 20], ['£30', 30], ['£40', 40], ['£50', 50]]), {prompt: 'All stakes', class: 'form-select mr-3'}) %>
+  <%= select_tag(:competition_id, options_for_select(@competitions, params[:competition_id]), {prompt: 'All competitions', class: 'form-select mr-3'}) %>
+  <%= select_tag(:stake, options_for_select([['All stakes', ''], ['£10', 10], ['£20', 20], ['£30', 30], ['£40', 40], ['£50', 50]], params[:stake]), {prompt: 'All stakes', class: 'form-select mr-3'}) %>
   <%= submit_tag('Filter', class: 'btn btn-primary') %>
 <% end %>
+
+<script>
+  console.log("Params competition_id: <%= params[:competition_id] %>");
+</script>
+
+
+
 
 <table class="table">
   <thead>
@@ -32,7 +40,17 @@
         <td><%= game.num_players %></td>
         <td><%= number_to_currency((game.stake || 0) * (game.num_players || 0)) %></td>
          <td></td>
-        <td><%= button_to 'Join game and proceed to selection', game_path(game), method: :get, class: 'btn btn-primary' %></td>
+        <td>
+          <%= form_with(url: game_games_enrollments_path(game), method: :post) do %>
+          <%= select_tag(:entries, options_for_select([1, 2]), prompt: "Select number of entries", name: "entries") %>
+
+            <%= submit_tag "Join with selected entries", class: "btn btn-primary" %>
+          <% end %>
+        </td>
+
+
+
+        <%# <td><%= button_to 'Join game and proceed to selection', game_path(game), method: :get, class: 'btn btn-primary' %></td>
         <td><%= link_to 'Edit', edit_game_path(game) %></td>
       </tr>
     <% end %>
