@@ -9,9 +9,6 @@
   <%= submit_tag('Filter', class: 'btn btn-primary') %>
 <% end %>
 
-<script>
-  console.log("Params competition_id: <%= params[:competition_id] %>");
-</script>
 
 
 
@@ -37,7 +34,7 @@
         <td><%= game.stake %></td>
         <td><%= game.deadline&.strftime('%A %d %B %Y %H:%M') || '' %></td>
         <td><%= game.start_date.strftime("%A %d %B %Y")%></td>
-        <td><%= game.num_players %></td>
+        <td><%= game.games_enrollments.count %></td>
         <td><%= number_to_currency((game.stake || 0) * (game.num_players || 0)) %></td>
          <td></td>
         <td>

@@ -8,7 +8,7 @@ Rails.application.routes.draw do
     get 'new_public_game', on: :collection
     post 'create_public_game', on: :collection
     resources :games_enrollments
-    resources :team_selections, only: [:index, :new, :create, :update, :destroy] do
+    resources :teams_selections, only: [:index, :new, :create, :update, :destroy] do
       collection do
         get 'fetch_fixtures'
       end

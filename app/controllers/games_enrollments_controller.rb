@@ -109,8 +109,4 @@ class GamesEnrollmentsController < ApplicationController
       flash[:error] = "Invalid number of entries."
     end
   end
-
-
-
-
 end
