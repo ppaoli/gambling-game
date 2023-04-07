@@ -1,39 +1,35 @@
-
-
-<%# <%= form_tag game_fixtures_path(@game), method: :post do %>
-  <%# <label for="entries">Select the number of entries you would like:</label> %>
-  <%# <%= select_tag "entries", options_for_select([1, 2]) %>
-  <%# <%= submit_tag "Submit" %>
-<%# <% end %>
-
-<%# <table>
-  <thead>
-    <tr>
-      <th>Home Team</th>
-      <th>Away Team</th>
-      <th>Select</th>
-    </tr>
-  </thead>
-  <tbody> %
-  <%# </tbody>
-</table> %>
 <h1><%= @game.title %></h1>
-
-<%# <% @fixtures.each do |fixture| %>
-  <%# <% starting_at = DateTime.parse(fixture['starting_at']) %>
-  <%# <li>
-    <%= "#{fixture['name']} - #{starting_at.strftime('%A %B %e %Y %H:%M')}" %>
+<h2>Round <%= @game.current_round_number %></h2>
 
 <% @fixtures.each do |fixture| %>
   <div class="fixture">
     <div class="team">
       <img class="teams-logos" src="<%= fixture['participants'][0]['image_path'] %>">
       <div class="team-name"><%= fixture['participants'][0]['name'] %></div>
+      <% if @existing_enrollments.count == 1 %>
+        <%= link_to "Select", new_game_teams_selection_path(@game, games_enrollment_id: @enrollment.id, round_id: @game.current_round_number, team_id: fixture['participants'][0]['id']), method: :post %>
+
+        <%= link_to "Select", new_game_teams_selection_path(@game, round_id: @game.current_round_number, team_id: fixture['participants'][1]['id']), method: :post, disabled: true, class: 'disabled' %>
+      <% elsif @existing_enrollments.count == 2 %>
+        <%= link_to "Select", new_game_teams_selection_path(@game, games_enrollment_id: @enrollment.id, round_id: @game.current_round_number, team_id: fixture['participants'][0]['id']), method: :post %>
+
+        <%= link_to "Select", new_game_teams_selection_path(@game, games_enrollment_id: @enrollment.id, round_id: @game.current_round_number, team_id: fixture['participants'][1]['id']), method: :post %>
+
+      <% end %>
     </div>
     <div class="vs">vs</div>
     <div class="team">
       <img class="teams-logos" src="<%= fixture['participants'][1]['image_path'] %>">
       <div class="team-name"><%= fixture['participants'][1]['name'] %></div>
+      <% if @existing_enrollments.count == 1 %>
+        <%= link_to "Select", new_game_teams_selection_path(@game, games_enrollment_id: @enrollment.id, round_id: @game.current_round_number, team_id: fixture['participants'][1]['id']), method: :post %>
+
+        <%= link_to "Select", new_game_teams_selection_path(@game, games_enrollment_id: @enrollment.id, round_id: @game.current_round_number, team_id: fixture['participants'][0]['id']), method: :post , disabled: true, class: 'disabled' %>
+      <% elsif @existing_enrollments.count == 2 %>
+        <%= link_to "Select", new_game_teams_selection_path(@game, games_enrollment_id: @enrollment.id, round_id: @game.current_round_number, team_id: fixture['participants'][0]['id']), method: :post %>
+        <%= link_to "Select", new_game_teams_selection_path(@game, games_enrollment_id: @enrollment.id, round_id: @game.current_round_number, team_id: fixture['participants'][1]['id']), method: :post %>
+
+      <% end %>
     </div>
     <div class="starting-at"><%= DateTime.parse(fixture['starting_at']).strftime('%A %B %e %Y %H:%M') %></div>
   </div>

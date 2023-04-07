@@ -2,15 +2,6 @@ class GamesController < ApplicationController
   before_action :set_game, only: [:show]
   before_action :competitions_all, only: [:index, :new_public_game, :create_public_game]
 
-
-  # def index
-  #   competitions_all
-  #   @games = Game.includes(:competition).where(is_public: true)
-  #   @games = @games.where(competition_id: params[:competition_id]) if params[:competition_id].present?
-  #   @games = @games.where(stake: params[:stake]) if params[:stake].present?
-  #   @games = @games.order(deadline: :asc)
-  # end
-
   def index
     competitions_all
     @games = Game.includes(:competition).where(is_public: true)
@@ -22,14 +13,19 @@ class GamesController < ApplicationController
   end
 
 
+  # def show
+  #   @game = Game.find(params[:id])
+  #   @fixtures = SportsMonkService.new.get_closest_upcoming_round_fixtures(@game.competition.sport_monk_competition_id)
+  #   @existing_enrollments = @game.games_enrollments.where(user_id: current_user.id)
+  # end
 
+    def show
+      @game = Game.find(params[:id])
+      @fixtures = SportsMonkService.new.get_closest_upcoming_round_fixtures(@game.competition.sport_monk_competition_id)
+      @enrollment = current_user.games_enrollments.find_by(game_id: @game.id)
+      @existing_enrollments = current_user.games_enrollments.where(game_id: @game.id)
+    end
 
-
-  def show
-    @game = Game.find(params[:id])
-    @fixtures = SportsMonkService.new.get_closest_upcoming_round_fixtures(@game.competition.sport_monk_competition_id)
-    # @fixtures = @game.competition.fixtures.order(start_time: :asc)
-  end
 
   def new_public_game
     @game = Game.new
@@ -61,6 +57,7 @@ class GamesController < ApplicationController
 
     # Associate the new competition with the game
     @game.competition = competition
+
     # Save the competition
     unless competition.save
       render :new_public_game
@@ -69,12 +66,24 @@ class GamesController < ApplicationController
 
     fixtures = sports_monk_service.get_closest_upcoming_round_fixtures(params[:game][:competition_id])
 
-    # Calculate the deadline as 2 hours before the first fixture in the upcoming round
-    first_fixture_start_time = DateTime.parse(fixtures.first['starting_at']) - 2.hours
-    @game.deadline = first_fixture_start_time
+    # Set the `deadline` value in the `@game` instance
+    @game.deadline = sports_monk_service.get_deadline(fixtures)
+    puts "DEADLINE OF NEW GAME IS #{@game.deadline} "
 
     respond_to do |format|
       if @game.save
+        # Create the first round for the game
+        sport_monk_round_id = sports_monk_service.get_round_id(fixtures)
+        round = @game.rounds.create(sport_monk_round_id: sport_monk_round_id)
+
+        # If the round fails to create, delete the game and return an error message
+        unless round.persisted?
+          @game.destroy
+          format.html { redirect_to new_public_game_path, alert: 'Error creating game. Please try again.' }
+          format.json { render json: { errors: round.errors.full_messages }, status: :unprocessable_entity }
+          return
+        end
+
         format.html { redirect_to games_path, notice: 'Game was successfully created.' }
         format.json { render :show, status: :created, location: games_path }
       else
@@ -101,6 +110,33 @@ class GamesController < ApplicationController
       render :edit
     end
   end
+
+  def update_rounds
+    game = Game.find(params[:id])
+    sports_monk_service = SportsMonkService.new
+    competition_id = game.competition.sport_monk_competition_id
+    closest_upcoming_round_fixtures, sport_monk_round_id, deadline = sports_monk_service.get_closest_upcoming_round_fixtures(competition_id)
+
+    # Find the next round number
+    next_round_number = game.current_round_number + 1
+
+    # Check if the current round is finished
+    if closest_upcoming_round_fixtures.present? && closest_upcoming_round_fixtures['finished'] == true
+      # Update the game's current round number
+      game.update(current_round_number: next_round_number, deadline: deadline)
+      # Create the next round for the game
+      round = game.rounds.create(sport_monk_round_id: sport_monk_round_id)
+      # If the round fails to create, delete the game and return an error message
+      unless round.persisted?
+        game.destroy
+        redirect_to games_path, alert: 'Error creating round. Please try again.'
+        return
+      end
+    end
+
+    redirect_to game_path(game)
+  end
+
 
 
   private

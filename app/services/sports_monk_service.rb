@@ -32,11 +32,11 @@ class SportsMonkService
     data = JSON.parse(response.body)['data']
     puts data
     first_fixture = data[0]["rounds"][0]['fixtures'][0]
-    puts "First Fixture Is #{first_fixture}"
+    # puts "First Fixture Is #{first_fixture}"
     sport_monk_country_id =first_fixture["participants"][0]["country_id"]
-    puts "Country ID is #{sport_monk_country_id}"
+    # puts "Country ID is #{sport_monk_country_id}"
     sport_monk_sport_id = first_fixture["participants"][0]["sport_id"]
-    puts "Sport ID is #{sport_monk_sport_id}"
+    # puts "Sport ID is #{sport_monk_sport_id}"
 
     {
       sport_monk_country_id: sport_monk_country_id,
@@ -77,7 +77,9 @@ class SportsMonkService
       end
     end
     # puts "Closest upcoming round: #{closest_upcoming_round}"
+
     closest_upcoming_fixtures = closest_upcoming_round['fixtures']
+    puts closest_upcoming_fixtures
 
     # Sort fixtures by starting time
     closest_upcoming_fixtures.sort_by! { |fixture| fixture['starting_at'] }
@@ -87,21 +89,26 @@ class SportsMonkService
       puts "Fixture: #{fixture['name']} (#{fixture['starting_at']})"
     end
 
-    # Calculate deadline of entry to the game for participants
-    deadline = DateTime.parse(closest_upcoming_fixtures.first['starting_at']) - Rational(2, 24)
-    deadline = deadline.strftime('%Y-%m-%d %H:%M:%S')
-    puts "Deadline: #{deadline}"
-
     return round_fixtures
   end
 
-  # # Map competition to sport and country
-  # def map_competition_to_sport_and_country(competition_id)
-  #   url = "https://api.sportmonks.com/v3/football/schedules/seasons/#{competition_id}?api_token=#{ENV['SPORTSMONK_API_TOKEN']}"
-  #   response = HTTParty.get(url)
-  #   country_id = response['data']['participants'].first['country_id']
-  #   sport_id = response['data']['sport_id']
-  #   { sport_id: sport_id, country_id: country_id }
-  # end
+  def get_deadline(closest_upcoming_fixtures)
+    deadline = DateTime.parse(closest_upcoming_fixtures.first['starting_at']) - Rational(2, 24)
+    deadline = deadline.strftime('%Y-%m-%d %H:%M:%S')
+    puts "Deadline: #{deadline}"
+    return deadline
+  end
 
+  def get_round_id(closest_upcoming_fixtures)
+    sport_monk_round_id = closest_upcoming_fixtures.first['round_id']
+  end
 end
+
+# # Map competition to sport and country
+# def map_competition_to_sport_and_country(competition_id)
+#   url = "https://api.sportmonks.com/v3/football/schedules/seasons/#{competition_id}?api_token=#{ENV['SPORTSMONK_API_TOKEN']}"
+#   response = HTTParty.get(url)
+#   country_id = response['data']['participants'].first['country_id']
+#   sport_id = response['data']['sport_id']
+#   { sport_id: sport_id, country_id: country_id }
+# end
