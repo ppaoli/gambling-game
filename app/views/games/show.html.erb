@@ -34,3 +34,16 @@
     <div class="starting-at"><%= DateTime.parse(fixture['starting_at']).strftime('%A %B %e %Y %H:%M') %></div>
   </div>
 <% end %>
+
+<%# DISPLAY THE REMAINING FIXTURES 
+    remaining_fixtures_by_round.each do |round_name, fixtures|
+      puts "Round #{round_name}"
+      fixtures.each do |fixture|
+        home_team = fixture[:home_team]
+        away_team = fixture[:away_team]
+        starting_at_bst = convert_utc_to_bst(fixture[:starting_at_utc])
+        puts "Fixture: #{home_team} vs #{away_team} (#{starting_at_bst})"
+      end
+      puts "\n"
+    end
+ %>
