@@ -14,3 +14,4 @@ class GamesEnrollment < ApplicationRecord
     self.status ||= :active
   end
 end
+

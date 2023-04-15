@@ -13,11 +13,6 @@ class GamesController < ApplicationController
   end
 
 
-  # def show
-  #   @game = Game.find(params[:id])
-  #   @fixtures = SportsMonkService.new.get_closest_upcoming_round_fixtures(@game.competition.sport_monk_competition_id)
-  #   @existing_enrollments = @game.games_enrollments.where(user_id: current_user.id)
-  # end
 
     def show
       @game = Game.find(params[:id])

@@ -17,6 +17,14 @@ Rails.application.configure do
   config.log_level = :debug
 
 
+  # [...]
+  # Add this line next to existing config.action_mailer settings
+  config.action_mailer.delivery_method = :letter_opener
+  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+  # [...]
+
+
+
   # Enable server timing
   config.server_timing = true
 

@@ -74,6 +74,8 @@ group :test do
   gem "webdrivers"
 end
 
+gem "letter_opener", group: :development
+
 gem "devise"
 gem "bootstrap"
 gem "simple_form"

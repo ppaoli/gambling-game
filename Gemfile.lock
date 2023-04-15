@@ -78,9 +78,6 @@ GEM
       autoprefixer-rails (>= 9.1.0)
       popper_js (>= 2.11.6, < 3)
       sassc-rails (>= 2.0.0)
-    bootstrap-sass (3.4.1)
-      autoprefixer-rails (>= 5.2.1)
-      sassc (>= 2.0.0)
     builder (3.2.4)
     capybara (3.38.0)
       addressable
@@ -126,6 +123,10 @@ GEM
     jbuilder (2.11.5)
       actionview (>= 5.0.0)
       activesupport (>= 5.0.0)
+    launchy (2.5.2)
+      addressable (~> 2.8)
+    letter_opener (1.8.1)
+      launchy (>= 2.2, < 3)
     loofah (2.19.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
@@ -258,7 +259,6 @@ PLATFORMS
 DEPENDENCIES
   bootsnap
   bootstrap
-  bootstrap-sass
   capybara
   debug
   devise
@@ -266,6 +266,7 @@ DEPENDENCIES
   httparty
   importmap-rails
   jbuilder
+  letter_opener
   pg
   puma (~> 5.0)
   pundit
