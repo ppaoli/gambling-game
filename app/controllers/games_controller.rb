@@ -27,6 +27,10 @@ class GamesController < ApplicationController
     @competitions = SportsMonkService.new.sportmonk_competitions_ids.map { |comp| [comp[:name], comp[:sport_monk_competition_id]] }
   end
 
+  def pre_setup
+    @game = Game.new(new_params)
+  end
+
 
   def create_public_game
     @game = Game.new(game_params)

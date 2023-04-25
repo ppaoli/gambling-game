@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_13_110345) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_24_222626) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -20,8 +20,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_13_110345) do
     t.bigint "country_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "current_match_day"
     t.integer "sport_monk_competition_id"
+    t.integer "sport_monk_sport_id"
+    t.integer "sport_monk_country_id"
     t.index ["country_id"], name: "index_competitions_on_country_id"
     t.index ["sport_id"], name: "index_competitions_on_sport_id"
   end
@@ -39,10 +40,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_13_110345) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "sport_monk_country_id"
+    t.string "name"
   end
 
   create_table "fixtures", force: :cascade do |t|
-    t.date "date"
+    t.datetime "starting_at", precision: nil
     t.bigint "competition_id", null: false
     t.integer "home_team_id"
     t.integer "away_team_id"
@@ -50,6 +52,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_13_110345) do
     t.datetime "updated_at", null: false
     t.integer "winner_id"
     t.bigint "round_id", null: false
+    t.integer "sport_monk_fixture_id"
+    t.boolean "finished"
+    t.integer "sport_monk_round_id"
     t.index ["competition_id"], name: "index_fixtures_on_competition_id"
     t.index ["round_id"], name: "index_fixtures_on_round_id"
   end
@@ -92,11 +97,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_13_110345) do
   end
 
   create_table "rounds", force: :cascade do |t|
-    t.bigint "game_id", null: false
+    t.bigint "game_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "sport_monk_round_id"
-    t.integer "sport_monk_round_name"
+    t.string "sport_monk_round_name"
+    t.boolean "finished"
+    t.datetime "starting_at"
     t.index ["game_id"], name: "index_rounds_on_game_id"
   end
 
@@ -112,6 +119,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_13_110345) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "sport_monk_participant_id"
+    t.string "image_path"
   end
 
   create_table "teams_selections", force: :cascade do |t|
