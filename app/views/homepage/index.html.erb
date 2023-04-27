@@ -19,6 +19,6 @@
   <%= link_to "Join a Public Game", games_path, class: "btn btn-primary" %>
 
   <% if current_user.admin? %>
-    <%= link_to "Create Public Game", new_public_game_games_path, class: "btn btn-danger" %>
+    <%= link_to "Create Public Game",  new_game_setup_path, class: "btn btn-danger" %>
   <% end %>
 <% end %>

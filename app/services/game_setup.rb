@@ -11,19 +11,18 @@ module GameSetup
       @parsed_data = nil
     end
 
-    def setup
-      parse_data()
-      setup_competitions()
-      setup_rounds()
-      setup_teams()
-      setup_countries()
-      add_missing_countries()
-    end
-
     def parse_data
       @parsed_data = parsed_data(@data)
     end
 
+    def setup
+      parse_data()
+      setup_competitions()
+      setup_teams()
+      setup_rounds()
+      setup_countries()
+      add_missing_countries()
+    end
 
     def setup_competitions
       parsed_result = parsed_data(@data)
@@ -47,17 +46,18 @@ module GameSetup
     def setup_rounds
       parsed_rounds = @parsed_data[:rounds]
       all_fixtures = @parsed_data[:fixtures]
+      competition = Competition.find_by(sport_monk_competition_id: @competition_id)
       parsed_rounds.each do |parsed_round|
         new_round = Round.find_or_create_by!(sport_monk_round_id: parsed_round[:id]) do |round|
           round.sport_monk_round_name = parsed_round[:name]
           round.starting_at = parsed_round[:starting_at]
           round.finished = parsed_round[:finished]
+          round.competition_id = competition.id
         end
-        puts "parsed round id: #{parsed_round[:id]}"
         round_fixtures = all_fixtures.select { |fixture| fixture['round_id'] == parsed_round[:id] }
-        puts "fixtures of this round with id #{new_round.id} is#{round_fixtures}"
         setup_fixtures(new_round.id, round_fixtures)
       end
+      # puts "Created round with ID: #{new_round.id} and sport_monk_round_id: #{new_round.sport_monk_round_id} for competition with ID: #{competition.id} and sport_monk_competition_id: #{competition.sport_monk_competition_id}"
     end
 
     def setup_fixtures(round_id, round_fixtures)
@@ -79,6 +79,14 @@ module GameSetup
             fixture.sport_monk_round_id = sport_monk_round_id
             fixture.competition_id = competition.id
             fixture.finished = !fixture_data['scores'].empty?
+
+            home_team = Team.find_by(sport_monk_participant_id: home_team_id)
+            away_team = Team.find_by(sport_monk_participant_id: away_team_id)
+
+            fixture.home_team = home_team if home_team
+            fixture.away_team = away_team if away_team
+            fixture.home_team_name = home_team.name if home_team
+            fixture.away_team_name = away_team.name if away_team
           end
         end
       end
@@ -122,14 +130,32 @@ module GameSetup
 
     def add_missing_countries
       missing_countries = [
-        { sport_monk_country_id: 462, name: "England" },
-        { sport_monk_country_id: 251, name: "Italy" },
+        { sport_monk_country_id: 462, name: 'England' },
+        { sport_monk_country_id: 251, name: 'Italy' }
       ]
       missing_countries.each do |country|
-        Country.find_or_create_by(sport_monk_country_id: country[:sport_monk_country_id]) do |new_country|
-          new_country.name = country[:name]
+        existing_country = Country.find_by(sport_monk_country_id: country[:sport_monk_country_id])
+        if existing_country.nil?
+          Country.create(sport_monk_country_id: country[:sport_monk_country_id], name: country[:name])
+          puts "Creating new country #{country[:name]}"
+        elsif existing_country.name.nil?
+          existing_country.update(name: country[:name])
+          puts "Updating existing country #{country[:name]}"
         end
       end
     end
+
+
+    # def add_missing_countries
+    #   missing_countries = [
+    #     { sport_monk_country_id: 251, name: 'Italy' },
+    #     { sport_monk_country_id: 462, name: 'England' },
+    #   ]
+    #   missing_countries.each do |country|
+    #     Country.find_or_create_by(sport_monk_country_id: country[:sport_monk_country_id]) do |new_country|
+    #       new_country.name = country[:name]
+    #     end
+    #   end
+    # end
   end
 end
