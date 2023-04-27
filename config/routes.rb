@@ -24,6 +24,9 @@ Rails.application.routes.draw do
   # Rules routes
   resources :rules, only: [:index]
 
+  # Game setup routes
+  resources :game_setup
+
   # Root route
   root to: 'homepage#index'
 end

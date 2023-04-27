@@ -72,7 +72,7 @@ module SportsMonkParser
       fp.each do |participant|
         id = participant['id']
         if !all_participants.has_key?(id)
-          all_participants[id] = {name: participant['name'], image: participant['image_path']}
+          all_participants[id] = { name: participant['name'], image_path: participant['image_path'] }
         end
 
         if participant['meta']['location'] == 'home'
@@ -97,13 +97,6 @@ module SportsMonkParser
     end
   end
 
-  # def parsed_participants(participants)
-  #   participants.map { |participant| participant.slice('id','sport_id', 'country_id','name', 'short_code', 'image_path', 'last_played_at', 'meta',) }
-  # end
-
-
-
-
   # Getting all Countries Ids
   def parse_all_countries(all_rounds)
     sportmonk_countries_data = all_rounds['data']
@@ -121,6 +114,14 @@ module SportsMonkParser
     end
     results
   end
+
+    # def parsed_participants(participants)
+  #   participants.map { |participant| participant.slice('id','sport_id', 'country_id','name', 'short_code', 'image_path', 'last_played_at', 'meta',) }
+  # end
+
+
+
+
 
   # Getting all Teams IDs
   # def parse_team_ids_from_first_round(round)

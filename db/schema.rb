@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_24_222626) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_26_223702) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -55,6 +55,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_24_222626) do
     t.integer "sport_monk_fixture_id"
     t.boolean "finished"
     t.integer "sport_monk_round_id"
+    t.string "home_team_name"
+    t.string "away_team_name"
     t.index ["competition_id"], name: "index_fixtures_on_competition_id"
     t.index ["round_id"], name: "index_fixtures_on_round_id"
   end
@@ -73,14 +75,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_24_222626) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "stake"
-    t.date "start_date"
-    t.datetime "deadline", precision: nil
-    t.integer "num_players"
     t.string "title"
     t.boolean "is_public", default: true
     t.bigint "user_id", null: false
-    t.integer "max_entries_per_user", default: 2
+    t.integer "max_entries_per_user", default: 3
     t.integer "current_round_number"
+    t.datetime "deadline"
     t.index ["competition_id"], name: "index_games_on_competition_id"
     t.index ["user_id"], name: "index_games_on_user_id"
   end
@@ -104,6 +104,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_24_222626) do
     t.string "sport_monk_round_name"
     t.boolean "finished"
     t.datetime "starting_at"
+    t.bigint "competition_id", null: false
+    t.index ["competition_id"], name: "index_rounds_on_competition_id"
     t.index ["game_id"], name: "index_rounds_on_game_id"
   end
 
@@ -170,6 +172,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_24_222626) do
   add_foreign_key "games", "users"
   add_foreign_key "games_enrollments", "games"
   add_foreign_key "games_enrollments", "users"
+  add_foreign_key "rounds", "competitions"
   add_foreign_key "rounds", "games"
   add_foreign_key "teams_selections", "games_enrollments"
   add_foreign_key "teams_selections", "rounds"

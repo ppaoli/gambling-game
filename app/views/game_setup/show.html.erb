@@ -1,0 +1,25 @@
+
+
+<h3><%= @game.title %></h3>
+<h6> Current Round : <%= @game.current_round_number %></h6>
+
+<% @fixtures.sort_by(&:starting_at).each do |fixture| %>
+  <div class="fixture">
+    <div class="team home-team">
+      <%= image_tag(fixture.home_team.image_path, class: 'teams-logos') %>
+      <div class="team-name">
+        <%= fixture.home_team_name %>
+      </div>
+    </div>
+    <div class="vs">
+      vs
+    </div>
+    <div class="team away-team">
+      <%= image_tag(fixture.away_team.image_path, class: 'teams-logos') %>
+      <div class="team-name">
+        <%= fixture.away_team_name %>
+      </div>
+    </div>
+    <%= fixture.starting_at.strftime("%A %d %B %Y %H:%M") %>
+  </div>
+<% end %>

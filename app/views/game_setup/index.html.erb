@@ -1,0 +1,28 @@
+<h1>All Public Games</h1>
+
+
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Competition</th>
+      <th>Stake £ (per entry)</th>
+      <th>Deadline for entry</th>
+      <th>Total Pot</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<tbody>
+<% @games.each do |game| %>
+  <tr>
+    <td><%= game.title %></td>
+    <td><%= game.stake %></td>
+    <td><%= game.deadline&.strftime('%A %d %B %Y %H:%M') || '' %></td>
+    <td><%= button_to 'Join game and proceed to selection', game_setup_path(game), method: :get, class: 'btn btn-primary' %></td>
+    <td><%= link_to 'Edit', edit_game_setup_path(game) %></td>
+  </tr>
+<% end %>
+
+</tbody>
+</table>
