@@ -1,7 +1,4 @@
-
-
-<h1>Public Games</h1>
-
+<h1>All Games</h1>
 
 <%= form_tag(games_path, method: :get, class: 'form-inline mb-3') do %>
   <%= select_tag(:competition_id, options_for_select(@competitions, params[:competition_id]), {prompt: 'All competitions', class: 'form-select mr-3'}) %>
@@ -9,22 +6,14 @@
   <%= submit_tag('Filter', class: 'btn btn-primary') %>
 <% end %>
 
-
-
-
-
 <table class="table">
   <thead>
     <tr>
-      <th>Game Title</th>
-      <th>Stake</th>
-      <th>Deadline for Entry</th>
-      <th>Start Date</th>
-      <th>Number of Entries</th>
+      <th>Competition</th>
+      <th>Stake £ (per entry)</th>
+      <th>Deadline for entry</th>
       <th>Total Pot</th>
       <th></th>
-      <th></th>
-      <th>Edit Game</th>
     </tr>
   </thead>
   <tbody>
@@ -33,22 +22,13 @@
         <td><%= game.title %></td>
         <td><%= game.stake %></td>
         <td><%= game.deadline&.strftime('%A %d %B %Y %H:%M') || '' %></td>
-        <td><%= game.start_date.strftime("%A %d %B %Y")%></td>
-        <td><%= game.games_enrollments.count %></td>
-        <td><%= number_to_currency((game.stake || 0) * (game.num_players || 0)) %></td>
-         <td></td>
         <td>
-          <%= form_with(url: game_games_enrollments_path(game), method: :post) do %>
-          <%= select_tag(:entries, options_for_select([1, 2]), prompt: "Select number of entries", name: "entries") %>
-
-            <%= submit_tag "Join with selected entries", class: "btn btn-primary" %>
+          <%= form_tag game_games_enrollments_path(game), method: :post do %>
+            <%= select_tag :num_entries, options_for_select([1, 2, 3]) %>
+            <%= button_tag 'Join game', class: 'btn btn-primary', name: nil %>
           <% end %>
         </td>
-
-
-
-        <%# <td><%= button_to 'Join game and proceed to selection', game_path(game), method: :get, class: 'btn btn-primary' %></td>
-        <td><%= link_to 'Edit', edit_game_path(game) %></td>
+        <td><%= link_to 'Edit', edit_game_setup_path(game) %></td>
       </tr>
     <% end %>
   </tbody>

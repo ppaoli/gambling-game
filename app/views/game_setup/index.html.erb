@@ -1,6 +1,8 @@
-<h1>All Public Games</h1>
+<h1>All Games</h1>
 
-
+  <% if current_user.admin? %>
+    <%= link_to "Create Public Game",  new_game_setup_path, class: "btn btn-danger" %>
+  <% end %>
 
 <table class="table">
   <thead>
@@ -13,16 +15,19 @@
     </tr>
   </thead>
   <tbody>
-<tbody>
-<% @games.each do |game| %>
-  <tr>
-    <td><%= game.title %></td>
-    <td><%= game.stake %></td>
-    <td><%= game.deadline&.strftime('%A %d %B %Y %H:%M') || '' %></td>
-    <td><%= button_to 'Join game and proceed to selection', game_setup_path(game), method: :get, class: 'btn btn-primary' %></td>
-    <td><%= link_to 'Edit', edit_game_setup_path(game) %></td>
-  </tr>
-<% end %>
-
-</tbody>
+    <% @games.each do |game| %>
+      <tr>
+        <td><%= game.title %></td>
+        <td><%= game.stake %></td>
+        <td><%= game.deadline&.strftime('%A %d %B %Y %H:%M') || '' %></td>
+        <td>
+          <%= form_tag game_setup_games_enrollments_path(game_setup_id: game.id), method: :post do %>
+            <%= select_tag :entries, options_for_select([1, 2, 3]) %>
+            <%= submit_tag 'Join game', class: 'btn btn-primary' %>
+          <% end %>
+        </td>
+        <td><%= link_to 'Edit', edit_game_setup_path(game) %></td>
+      </tr>
+    <% end %>
+  </tbody>
 </table>

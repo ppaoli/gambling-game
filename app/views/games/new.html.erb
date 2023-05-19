@@ -1,0 +1,14 @@
+<h1> Create a Game</h1>
+
+<%= form_for @game do |f| %>
+  <%= f.label :competition_id %>
+  <%= f.collection_select(:competition_id, @competitions, :id, :name) %>
+
+<%= f.label :stake %>
+<%= f.number_field :stake, class: 'form-control' %>
+
+<%= f.label :title %>
+<%= f.text_field :title, class: 'form-control' %>
+
+<%= f.submit 'Create Game', class: "btn btn-primary" %>
+<% end  %>

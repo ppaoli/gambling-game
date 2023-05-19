@@ -3,11 +3,15 @@ Rails.application.routes.draw do
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
+    # Root route
+    root to: 'homepage#index'
+
+    
   # Public games routes
   resources :games, only: [:index, :show, :new, :create, :edit, :update] do
     get 'new_public_game', on: :collection
     post 'create_public_game', on: :collection
-    resources :games_enrollments
+    # resources :games_enrollments
     resources :teams_selections, only: [:index, :new, :create, :update, :destroy] do
       collection do
         get 'fetch_fixtures'
@@ -25,8 +29,13 @@ Rails.application.routes.draw do
   resources :rules, only: [:index]
 
   # Game setup routes
-  resources :game_setup
+  resources :game_setup do
+    resources :games_enrollments do
+      resources :teams_selections
+    end
+  end
 
-  # Root route
-  root to: 'homepage#index'
+  # Personal dashboard routes
+  resources :dashboard, only: [:index]
+
 end

@@ -57,7 +57,6 @@ module GameSetup
         round_fixtures = all_fixtures.select { |fixture| fixture['round_id'] == parsed_round[:id] }
         setup_fixtures(new_round.id, round_fixtures)
       end
-      # puts "Created round with ID: #{new_round.id} and sport_monk_round_id: #{new_round.sport_monk_round_id} for competition with ID: #{competition.id} and sport_monk_competition_id: #{competition.sport_monk_competition_id}"
     end
 
     def setup_fixtures(round_id, round_fixtures)
@@ -103,22 +102,6 @@ module GameSetup
       end
     end
 
-        #Save for later use
-        # if fixture.finished
-        #   target_round = round.sport_monk_round_name
-        #   results = fetch_results(target_round)
-        #   fixture_result = results.find { |result| result[:home_team] == home_team && result[:away_team] == away_team }
-        #   if fixture_result
-        #     fixture.update(
-        #       home_score: fixture_result[:home_score],
-        #       away_score: fixture_result[:away_score],
-        #       winner: fixture_result[:winner] == "Draw" ? nil : fixture_result[:winner]
-        #     )
-        #   end
-        # end
-    #   end
-    # end
-
 
     def setup_countries
       @countries.each do |country|
@@ -146,15 +129,19 @@ module GameSetup
     end
 
 
-    # def add_missing_countries
-    #   missing_countries = [
-    #     { sport_monk_country_id: 251, name: 'Italy' },
-    #     { sport_monk_country_id: 462, name: 'England' },
-    #   ]
-    #   missing_countries.each do |country|
-    #     Country.find_or_create_by(sport_monk_country_id: country[:sport_monk_country_id]) do |new_country|
-    #       new_country.name = country[:name]
-    #     end
+        #Save for later use to determine if a fixture is done
+        # if fixture.finished
+        #   target_round = round.sport_monk_round_name
+        #   results = fetch_results(target_round)
+        #   fixture_result = results.find { |result| result[:home_team] == home_team && result[:away_team] == away_team }
+        #   if fixture_result
+        #     fixture.update(
+        #       home_score: fixture_result[:home_score],
+        #       away_score: fixture_result[:away_score],
+        #       winner: fixture_result[:winner] == "Draw" ? nil : fixture_result[:winner]
+        #     )
+        #   end
+        # end
     #   end
     # end
   end

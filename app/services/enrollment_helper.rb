@@ -1,71 +1,53 @@
 module EnrollmentHelper
-  class << self
-    def join_game(user, game, num_entries)
-      return :game_not_found unless game
-      return :deadline_passed unless deadline_not_passed(game)
-      return :user_not_found unless user
-      return :too_many_entries if num_entries > Game::MAX_ENTRIES_PER_USER
-
-      existing_enrollments = GamesEnrollment.where(user_id: user.id, game_id: game.id).count
-      return :already_joined_game if existing_enrollments + num_entries > Game::MAX_ENTRIES_PER_USER
-
-      entries_created = 0
-      ActiveRecord::Base.transaction do
-        num_entries.times do |n|
-          entry_id = "#{user.id}-#{game.id}-#{n + existing_enrollments + 1}"
-          enrollment = GamesEnrollment.new(user_id: user.id, game_id: game.id, entry_id: entry_id)
-          enrollment.save!
-          entries_created += 1
-        end
+  def enroll_user(user_id, entries)
+    if entries.between?(1, Game::MAX_ENTRIES_PER_USER) && @game.deadline > DateTime.now - 2
+      entries.times do |i|
+        @game.games_enrollments.create(user_id: user_id, entry_id: i + 1)
       end
-
-      entries_created
-    end
-
-    def leave_game(user, game)
-      enrollment = GamesEnrollment.where(user_id: user.id, game_id: game.id)
-      if deadline_not_passed(game) && enrollment.exists?
-        enrollment.destroy_all
-        true
-      else
-        false
-      end
-    end
-
-    def change_entries(user, game, num_entries)
-      return :deadline_passed unless deadline_not_passed(game)
-      return :too_many_entries if num_entries > Game::MAX_ENTRIES_PER_USER
-
-      existing_enrollments = GamesEnrollment.where(user_id: user.id, game_id: game.id).count
-      return :already_joined_game if existing_enrollments == num_entries
-
-      if existing_enrollments > num_entries
-        enrollments_to_remove = existing_enrollments - num_entries
-        ActiveRecord::Base.transaction do
-          GamesEnrollment.where(user_id: user.id, game_id: game.id).last(enrollments_to_remove).destroy_all
-        end
-        enrollments_to_remove
-      elsif existing_enrollments < num_entries
-        enrollments_to_create = num_entries - existing_enrollments
-        ActiveRecord::Base.transaction do
-          enrollments_to_create.times do |n|
-            entry_id = "#{user.id}-#{game.id}-#{n + existing_enrollments + 1}"
-            enrollment = GamesEnrollment.new(user_id: user.id, game_id: game.id, entry_id: entry_id)
-            enrollment.save!
-          end
-        end
-        enrollments_to_create
-      else
-        0
-      end
-    end
-
-    private
-
-    def deadline_not_passed(game)
-      game.closest_upcoming_fixture.starting_at > Time.zone.now
-    rescue NoMethodError
-      false
+      @game.update_entries_count
+      flash[:notice] = "You have successfully enrolled with #{entries} #{'entry'.pluralize(entries)} for this game."
+    elsif @game.deadline <= DateTime.now
+      flash[:error] = "The deadline to join this game has passed."
+    else
+      flash[:error] = "Invalid number of entries."
     end
   end
+
+  def update_existing_enrollment(existing_enrollments)
+    entries = params[:entries].to_i
+
+    if @game.deadline > DateTime.now && entries.between?(1, Game::MAX_ENTRIES_PER_USER)
+      #how many enrollments need to be removed in order to make room for the new enrollments
+      enrollments_to_remove_count = existing_enrollments.count - entries
+
+      if enrollments_to_remove_count > 0
+        enrollments_to_remove = existing_enrollments.order(entry_id: :desc).limit(enrollments_to_remove_count)
+        enrollments_to_remove.each(&:destroy)
+      else
+        enrollments_to_add_count = entries - existing_enrollments.count
+        enroll_user(current_user.id, enrollments_to_add_count)
+      end
+
+      # Update the game entries count
+      @game.update_entries_count
+
+      flash[:notice] = "You have successfully updated your enrollment to #{entries} #{'entry'.pluralize(entries)} for this game."
+    elsif @game.deadline <= DateTime.now
+      flash[:error] = "The deadline to edit your entries has passed."
+    else
+      flash[:error] = "Invalid number of entries."
+    end
+  end
+
+  def destroy
+  # Remove the enrollment
+    @enrollment.destroy
+
+    # Update the game entries count
+    @game.update_entries_count
+
+    flash[:notice] = "You have been removed from the game."
+    redirect_to game_setup_path
+  end
 end
+

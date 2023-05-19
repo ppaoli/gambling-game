@@ -1,0 +1,35 @@
+<h1>My Dashboard</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Game</th>
+      <th>Entries</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @games.each do |game| %>
+      <% enrollment = game.games_enrollments.find_by(user_id: current_user.id) %>
+      <tr>
+        <td><%= game.title %></td>
+        <td>
+          <% if enrollment %>
+            <%= game.entries %>
+          <% else %>
+            0
+          <% end %>
+        </td>
+        <td>
+          <% if enrollment %>
+            <%= link_to 'Edit', edit_game_setup_games_enrollment_path(game_setup_id: game.id, id: enrollment.id)%>
+
+            <%= link_to 'Remove', game_setup_games_enrollment_path(game_setup_id: game.id, id: enrollment.id),method: :delete, data: { confirm: 'Are you sure?' } %>
+          <% else %>
+            <%= link_to 'Browse All Games!', game_setup_index_path %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

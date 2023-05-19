@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_26_223702) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_08_095254) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -70,6 +70,17 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_26_223702) do
     t.index ["user_id"], name: "index_game_invitations_on_user_id"
   end
 
+  create_table "game_rounds", force: :cascade do |t|
+    t.bigint "game_id", null: false
+    t.bigint "round_id", null: false
+    t.integer "game_round_number", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["game_id", "round_id"], name: "index_game_rounds_on_game_id_and_round_id", unique: true
+    t.index ["game_id"], name: "index_game_rounds_on_game_id"
+    t.index ["round_id"], name: "index_game_rounds_on_round_id"
+  end
+
   create_table "games", force: :cascade do |t|
     t.bigint "competition_id", null: false
     t.datetime "created_at", null: false
@@ -81,6 +92,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_26_223702) do
     t.integer "max_entries_per_user", default: 3
     t.integer "current_round_number"
     t.datetime "deadline"
+    t.integer "entries"
     t.index ["competition_id"], name: "index_games_on_competition_id"
     t.index ["user_id"], name: "index_games_on_user_id"
   end
@@ -126,11 +138,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_26_223702) do
 
   create_table "teams_selections", force: :cascade do |t|
     t.bigint "games_enrollment_id", null: false
-    t.bigint "round_id", null: false
     t.bigint "team_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "sport_monk_team_id"
+    t.integer "sport_monk_participant_id"
+    t.string "team_name"
+    t.bigint "round_id", null: false
     t.index ["games_enrollment_id"], name: "index_teams_selections_on_games_enrollment_id"
     t.index ["round_id"], name: "index_teams_selections_on_round_id"
     t.index ["team_id"], name: "index_teams_selections_on_team_id"
@@ -168,6 +181,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_26_223702) do
   add_foreign_key "fixtures", "rounds"
   add_foreign_key "game_invitations", "games"
   add_foreign_key "game_invitations", "users"
+  add_foreign_key "game_rounds", "games"
+  add_foreign_key "game_rounds", "rounds"
   add_foreign_key "games", "competitions"
   add_foreign_key "games", "users"
   add_foreign_key "games_enrollments", "games"

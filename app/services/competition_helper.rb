@@ -1,19 +1,52 @@
 module CompetitionHelper
   class << self
+
+    # ADD these methods in the rounds model
     def closest_upcoming_round(competition)
-      competition.rounds.where("starting_at > ?", Time.zone.now).order(:starting_at).first
+      competition.rounds.where('starting_at > ?', Time.zone.now).order(:starting_at).first
     end
 
-    def deadline(game)
-      closest_upcoming_fixture = fixtures(closest_upcoming_round(game.competition)).order(:starting_at).first
+    # Move whole method to the game model in a method called closest round
+    def calc_deadline(game)
+      closest_round = closest_upcoming_round(game.competition)
+      closest_upcoming_fixture = closest_round.fixtures.order(:starting_at).first
       (closest_upcoming_fixture.starting_at - 2.hours).in_time_zone(Time.zone)
     end
 
+    # Scope
     def fixtures(round)
       round.fixtures.includes(:home_team, :away_team)
     end
+
+
+
+    def create_game_rounds_for_new_game(game)
+      competition = game.competition
+      upcoming_rounds = competition.rounds.where('starting_at >= ?', Time.zone.now).order(:starting_at)
+      upcoming_rounds.each_with_index do |round, index|
+        GameRound.create(game: game, round: round, game_round_number: index + 1)
+      end
+    end
+
+    def check_round_finished_and_update_games(round)
+      if round.finished
+        games_related_to_round = Game.joins(:game_rounds).where(game_rounds: { round_id: round.id })
+        games_related_to_round.each do |game|
+          increment_current_round_number(game)
+        end
+      end
+    end
+
+    def increment_current_round_number(game)
+      current_round_number = game.current_round_number
+      next_round_number = current_round_number + 1
+      if next_round_number <= game.game_rounds.count
+        game.update(current_round_number: next_round_number)
+      end
+    end
   end
 end
+
 
 
 
