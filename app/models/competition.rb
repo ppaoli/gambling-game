@@ -4,5 +4,8 @@ class Competition < ApplicationRecord
   has_many :games
   has_many :rounds
   has_many :competitions_enrollments
-  # validates :current_match_day, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 1 }
+
+  def closest_upcoming_round
+    rounds.where('starting_at > ?', Time.zone.now).order(:starting_at).first
+  end
 end

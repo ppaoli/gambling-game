@@ -42,7 +42,7 @@ module SportsMonkParser
   end
 
   #create competition details in the DB
-  #create a rake task
+
   def sportmonk_competitions_ids
     [
       { name: 'Premier League', sport_monk_competition_id: 19_734 },

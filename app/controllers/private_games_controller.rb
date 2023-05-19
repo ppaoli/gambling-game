@@ -44,6 +44,6 @@ class PrivateGamesController < ApplicationController
   end
 
   def game_params
-    params.require(:game).permit(:competition_id, :stake, :start_date, :deadline, :num_players, :title, :user_id)
+    params.require(:game).permit(:competition_id, :stake, :title, :user_id)
   end
 end
